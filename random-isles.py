@@ -2,10 +2,6 @@
 import random
 import requests
 
-
-
-
-
 def fetch_islanders_roster():
     """
     Fetch the current NY Islanders roster from the NHL API.
@@ -75,8 +71,6 @@ def fetch_islanders_roster():
     print(f"Found {len(players)} Islanders players in API response.")
     return players
 
-
-
 def fetch_player_stats(player_id, season_id=None, career=False):
     """
     Fetch stats for a player for a given season or career from the NHL API.
@@ -128,7 +122,6 @@ def fetch_player_stats(player_id, season_id=None, career=False):
             except (TypeError, ValueError):
                 pass
         return {"goals": goals, "assists": assists, "points": points}
-
 
 def get_random_islander():
     """
@@ -214,7 +207,6 @@ def get_random_islander():
         player["career_stats"] = {}
     return player
 
-
 def get_random_islanders(n=1):
     """
     Return a list of n unique random NY Islanders players (name, number, position) from the current roster.
@@ -225,17 +217,18 @@ def get_random_islanders(n=1):
     return random.sample(roster, k=min(n, len(roster)))
 
 if __name__ == "__main__":
-    player = get_random_islander()
-    if player:
-        print("Random NY Islander:")
-        print(f"  Name: {player['name']}")
-        print(f"  Number: {player['number']}")
-        print(f"  Position: {player['position']}")
-        if player.get('previous_season_stats'):
-            stats = player['previous_season_stats']
-            print(f"  Previous Season: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
-        if player.get('career_stats'):
-            stats = player['career_stats']
-            print(f"  Career: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
-    else:
-        print("No Islanders player found.")
+            player = get_random_islander()
+            if player:
+                print("Random NY Islander:")
+                print(f"  Name: {player['name']}")
+                print(f"  Number: {player['number']}")
+                print(f"  Position: {player['position']}")
+                if player.get('previous_season_stats'):
+                    stats = player['previous_season_stats']
+                    print(f"  Games Played: {stats.get('gamesPlayed', 0)}")
+                    print(f"  Previous Season: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
+                if player.get('career_stats'):
+                    stats = player['career_stats']
+                    print(f"  Career: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
+            else:
+                print("No Islanders player found.")
