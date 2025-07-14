@@ -19,17 +19,16 @@ Run the script from the command line:
 python isles.py
 ```
 
+
 You will see output like:
 
-
 ```
-Random NY Islander: {
-  'name': 'Mathew Barzal',
-  'number': '13',
-  'position': 'Center',
-  'previous_season_stats': {'goals': 23, 'assists': 40, 'points': 63},
-  'career_stats': {'goals': 113, 'assists': 306, 'points': 419}
-}
+Random NY Islander:
+  Name: Mathew Barzal
+  Number: 13
+  Position: Center
+  Previous Season: 23 G, 40 A, 63 PTS
+  Career: 113 G, 306 A, 419 PTS
 ```
 
 ## Notes
