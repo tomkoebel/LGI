@@ -21,14 +21,18 @@ python isles.py
 
 You will see output like:
 
+
 ```
-Random NY Islander: {'name': 'Mathew Barzal', 'number': '13', 'position': 'Center', 'previous_season_stats': {...}, 'career_stats': {...}}
+Random NY Islander: {
+  'name': 'Mathew Barzal',
+  'number': '13',
+  'position': 'Center',
+  'previous_season_stats': {'goals': 23, 'assists': 40, 'points': 63},
+  'career_stats': {'goals': 113, 'assists': 306, 'points': 419}
+}
 ```
 
 ## Notes
 - The script uses the endpoint `https://api-web.nhle.com/v1/roster/NYI/current` for the current roster.
 - Player stats are fetched from the NHL API if a player ID is available.
 - If the API structure changes, you may need to update the extraction logic in `fetch_islanders_roster()`.
-
-## License
-MIT

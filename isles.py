@@ -60,10 +60,17 @@ def fetch_islanders_roster():
                 elif group is data.get("goalies", []):
                     position = "Goalie"
             position = position or "N/A"
+            # Try to get player id from nested player_info or top-level player dict
+            player_id = None
+            if "id" in player_info:
+                player_id = player_info["id"]
+            elif "id" in player:
+                player_id = player["id"]
             players.append({
                 "name": name,
                 "number": number,
-                "position": position
+                "position": position,
+                "id": player_id
             })
     print(f"Found {len(players)} Islanders players in API response.")
     return players
@@ -85,7 +92,17 @@ def fetch_player_stats(player_id, season_id=None, career=False):
         data = resp.json()
         stats = data.get("featuredStats", {}).get("regularSeason", {})
         if stats and "career" in stats:
-            return stats["career"]
+            career_stats = stats["career"]
+            def to_int(val):
+                try:
+                    return int(val)
+                except (TypeError, ValueError):
+                    return 0
+            return {
+                "goals": to_int(career_stats.get("goals", 0)),
+                "assists": to_int(career_stats.get("assists", 0)),
+                "points": to_int(career_stats.get("points", 0))
+            }
         return {}
     else:
         if not season_id:
@@ -95,12 +112,22 @@ def fetch_player_stats(player_id, season_id=None, career=False):
         if resp.status_code != 200:
             return {}
         data = resp.json()
-        totals = {}
+        goals = assists = points = 0
         for game in data.get("gameLog", []):
-            for k, v in game.get("stats", {}).items():
-                if isinstance(v, (int, float)):
-                    totals[k] = totals.get(k, 0) + v
-        return totals
+            stats = game.get("stats", {})
+            try:
+                goals += int(stats.get("goals", 0) or 0)
+            except (TypeError, ValueError):
+                pass
+            try:
+                assists += int(stats.get("assists", 0) or 0)
+            except (TypeError, ValueError):
+                pass
+            try:
+                points += int(stats.get("points", 0) or 0)
+            except (TypeError, ValueError):
+                pass
+        return {"goals": goals, "assists": assists, "points": points}
 
 
 def get_random_islander():
@@ -119,11 +146,61 @@ def get_random_islander():
         if key in player:
             player_id = player[key]
             break
-    # Try to get id from API if not present
+    # Try to get id from nested player_info if not present
     if not player_id:
-        # Try to get id from the roster API (player_info)
-        # This is a best effort, as the id may not be present in the current structure
-        pass
+        # The original API response has a nested 'player' dict with 'id'
+        # Try to fetch the roster again and match by name/number/position
+        url = "https://api-web.nhle.com/v1/roster/NYI/current"
+        try:
+            resp = requests.get(url)
+            resp.raise_for_status()
+            data = resp.json()
+            for group in [data.get("forwards", []), data.get("defensemen", []), data.get("goalies", [])]:
+                for p in group:
+                    p_info = p.get("player", {})
+                    # Try to match by name and number
+                    name = (
+                        p_info.get("fullName")
+                        or (p_info.get("firstName", {}).get("default") if isinstance(p_info.get("firstName"), dict) else p_info.get("firstName"))
+                        or ""
+                    )
+                    last = (
+                        p_info.get("lastName", {}).get("default") if isinstance(p_info.get("lastName"), dict) else p_info.get("lastName")
+                    )
+                    if last:
+                        name = (name + " " + last).strip()
+                    if not name:
+                        first = p.get("firstName", "")
+                        last = p.get("lastName", "")
+                        if isinstance(first, dict):
+                            first = first.get("default", "")
+                        if isinstance(last, dict):
+                            last = last.get("default", "")
+                        name = (first + " " + last).strip()
+                    name = name.strip() or "N/A"
+                    number = str(p.get("sweaterNumber", "N/A"))
+                    position = None
+                    if isinstance(p_info.get("position"), dict):
+                        position = p_info["position"].get("name")
+                    if not position and isinstance(p.get("position"), dict):
+                        position = p["position"].get("name")
+                    if not position and p.get("position"):
+                        position = p["position"]
+                    if not position:
+                        if group is data.get("forwards", []):
+                            position = "Forward"
+                        elif group is data.get("defensemen", []):
+                            position = "Defenseman"
+                        elif group is data.get("goalies", []):
+                            position = "Goalie"
+                    position = position or "N/A"
+                    if name == player["name"] and number == player["number"] and position == player["position"]:
+                        player_id = p_info.get("id")
+                        break
+                if player_id:
+                    break
+        except Exception:
+            pass
     # Previous season id
     from datetime import datetime
     current_year = datetime.now().year
@@ -148,4 +225,17 @@ def get_random_islanders(n=1):
     return random.sample(roster, k=min(n, len(roster)))
 
 if __name__ == "__main__":
-    print("Random NY Islander:", get_random_islander())
+    player = get_random_islander()
+    if player:
+        print("Random NY Islander:")
+        print(f"  Name: {player['name']}")
+        print(f"  Number: {player['number']}")
+        print(f"  Position: {player['position']}")
+        if player.get('previous_season_stats'):
+            stats = player['previous_season_stats']
+            print(f"  Previous Season: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
+        if player.get('career_stats'):
+            stats = player['career_stats']
+            print(f"  Career: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
+    else:
+        print("No Islanders player found.")
