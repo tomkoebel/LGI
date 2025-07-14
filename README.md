@@ -1,38 +1,34 @@
 # NY Islanders Random Player Selector
 
-This Python script fetches the current New York Islanders roster from the official NHL API and allows you to randomly select a player, including their name, jersey number, position, previous season stats, and career stats (if available).
+A Python script that fetches the current New York Islanders roster from the official NHL API and randomly selects a player, displaying their name, jersey number, position, previous season stats, and career stats (if available).
 
 ## Features
-- Fetches the current Islanders roster from the NHL API
-- Returns a random player with name, number, and position
-- Attempts to fetch previous season and career stats for each player
-- Includes functions to get one or multiple random Islanders
+- Retrieves the current Islanders roster from the NHL API
+- Selects and displays a random player’s name, number, and position
+- Fetches previous season and career stats for each player (if available)
+- Supports selecting one or multiple random players
 
 ## Requirements
-- Python 3.7+
-- `requests` library (install with `pip install requests`)
+- Python 3.7 or higher
+- `requests` library (`pip install requests`)
 
 ## Usage
+
 Run the script from the command line:
 
 ```bash
 python isles.py
 ```
 
-
-You will see output like:
-
-```
+### Example output:
 Random NY Islander:
   Name: Mathew Barzal
   Number: 13
   Position: Center
   Previous Season: 23 G, 40 A, 63 PTS
   Career: 113 G, 306 A, 419 PTS
-```
 
 ## Notes
 - The script uses the endpoint `https://api-web.nhle.com/v1/roster/NYI/current` for the current roster.
 - Player stats are fetched from the NHL API if a player ID is available.
-- If the API structure changes, you may need to update the extraction logic in `fetch_islanders_roster()`.
 - If the API structure changes, you may need to update the extraction logic in `fetch_islanders_roster()`.
