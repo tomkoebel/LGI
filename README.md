@@ -1,6 +1,7 @@
 # NHL Random Player Selector
 
 This Python script fetches the current roster for any NHL team from the official NHL API and randomly selects a player, displaying their name, jersey number, position, previous season stats, and career stats (if available). You can specify a team abbreviation (e.g., 'NYI', 'TOR', 'BOS'), or let the script pick a random team for you. The script is robust, supports both command-line and programmatic use, and is tested for all NHL teams.
+
 ## Features
 
 - Retrieves the current roster for any NHL team from the NHL API
@@ -71,7 +72,6 @@ Or, as a dictionary (when used programmatically):
   'career_stats': {'goals': 113, 'assists': 306, 'points': 419}
 }
 ```
-
 
 ## Team Abbreviations
 
