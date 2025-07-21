@@ -95,7 +95,7 @@ def fetch_roster(team_abbr=None):
                 player_id = player["id"]
             image_url = None
             if player_id:
-                image_url = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
+                image_url = f"https://assets.nhle.com/mugs/{player_id}.png"
             players.append({
                 "name": name,
                 "number": number,
@@ -118,7 +118,7 @@ def get_random_player(team_abbr=None):
     print(f"DEBUG: Using previous season id: {prev_season}")
     if player_id:
         player["career_stats"] = fetch_player_stats(player_id, career=True)
-        player["image_url"] = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
+        player["image_url"] = f"https://assets.nhle.com/mugs/{player_id}.png"
     else:
         player["career_stats"] = {}
         player["image_url"] = None
@@ -144,7 +144,7 @@ def compare_random_players(team_abbr=None):
         player_id = player.get("id")
         if player_id:
             player["career_stats"] = fetch_player_stats(player_id, career=True)
-            player["image_url"] = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
+            player["image_url"] = f"https://assets.nhle.com/mugs/{player_id}.png"
         else:
             player["career_stats"] = {}
             player["image_url"] = None
