@@ -119,17 +119,45 @@ This project includes a Flask web server that provides a user-friendly interface
 - Team logo is shown above the player's name using the official NHL SVG logo.
 - Handles missing images and stats gracefully.
 
+
 ### How to Start the Server
 
-1. **Install dependencies (in your virtual environment):**
+1. **Activate your virtual environment:**
+   ```sh
+   source .venv/bin/activate
+   ```
+2. **Install dependencies:**
    ```sh
    pip install flask requests
    ```
-2. **Start the Flask server:**
+3. **Start the Flask server:**
    ```sh
    python3 app.py
    ```
-   By default, the server runs on `http://127.0.0.1:5050`.
+   By default, the server runs on `http://127.0.0.1:5000`.
+
+### Project Structure
+
+```
+LGI/
+├── api/
+│   ├── __init__.py
+│   ├── nhl.py         # Roster and player selection logic
+│   └── stats.py       # Player stats logic
+├── app.py             # Flask web server
+├── random_nhl.py      # Standalone CLI script (uses api modules)
+├── templates/
+│   ├── player.html    # Player UI
+│   └── compare.html   # Comparison UI
+├── README.md
+└── .venv/             # Python virtual environment
+```
+
+### Usage Notes
+- All backend logic is now modularized in the `api` directory.
+- The Flask app imports from `api.nhl` and `api.stats`.
+- You can run the CLI script (`random_nhl.py`) or the web server (`app.py`).
+- The web UI is available at `http://127.0.0.1:5000` after starting the server.
 
 ### What the HTML Does
 - `templates/player.html`: Shows a random NHL player, their team logo, headshot, and stats. The team logo appears above the player's name.
