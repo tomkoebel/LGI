@@ -107,3 +107,36 @@ Run tests with:
 
 ```bash
 pytest -s test_random_nhl.py
+```
+
+## Flask Web App
+
+This project includes a Flask web server that provides a user-friendly interface for viewing random NHL players and comparing two players from any team.
+
+### Features
+- Displays a random NHL player with headshot, team logo, name, number, position, previous season stats, and career stats.
+- Allows comparison of two random players from the same team.
+- Team logo is shown above the player's name using the official NHL SVG logo.
+- Handles missing images and stats gracefully.
+
+### How to Start the Server
+
+1. **Install dependencies (in your virtual environment):**
+   ```sh
+   pip install flask requests
+   ```
+2. **Start the Flask server:**
+   ```sh
+   python3 app.py
+   ```
+   By default, the server runs on `http://127.0.0.1:5050`.
+
+### What the HTML Does
+- `templates/player.html`: Shows a random NHL player, their team logo, headshot, and stats. The team logo appears above the player's name.
+- `templates/compare.html`: Shows two random players side-by-side for comparison, including their team logos, headshots, and stats.
+- The UI is simple and modern, with images and stats clearly displayed.
+
+### Example
+Visit `http://127.0.0.1:5050` in your browser to view a random player. Click "Compare Two Players" to see a side-by-side comparison.
+
+---
