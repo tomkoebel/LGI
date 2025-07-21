@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare NHL Players</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .player { display: inline-block; width: 45%; vertical-align: top; margin-right: 2em; }
+        .player-img { max-width: 200px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Compare Two NHL Players</h1>
+    <div class="player">
+        {% if player1 %}
+            <img class="player-img" src="{{ player1.image_url }}" alt="Player 1 Headshot">
+            <ul>
+                <li><strong>Name:</strong> {{ player1.name }}</li>
+                <li><strong>Number:</strong> {{ player1.number }}</li>
+                <li><strong>Position:</strong> {{ player1.position }}</li>
+                <li><strong>Previous Season:</strong> {{ player1.previous_season_stats.goals }} G, {{ player1.previous_season_stats.assists }} A, {{ player1.previous_season_stats.points }} PTS</li>
+                <li><strong>Career:</strong> {{ player1.career_stats.goals }} G, {{ player1.career_stats.assists }} A, {{ player1.career_stats.points }} PTS</li>
+            </ul>
+        {% else %}
+            <p>No player found.</p>
+        {% endif %}
+    </div>
+    <div class="player">
+        {% if player2 %}
+            <img class="player-img" src="{{ player2.image_url }}" alt="Player 2 Headshot">
+            <ul>
+                <li><strong>Name:</strong> {{ player2.name }}</li>
+                <li><strong>Number:</strong> {{ player2.number }}</li>
+                <li><strong>Position:</strong> {{ player2.position }}</li>
+                <li><strong>Previous Season:</strong> {{ player2.previous_season_stats.goals }} G, {{ player2.previous_season_stats.assists }} A, {{ player2.previous_season_stats.points }} PTS</li>
+                <li><strong>Career:</strong> {{ player2.career_stats.goals }} G, {{ player2.career_stats.assists }} A, {{ player2.career_stats.points }} PTS</li>
+            </ul>
+        {% else %}
+            <p>No player found.</p>
+        {% endif %}
+    </div>
+    <br style="clear:both;">
+    <a href="/">Back to Random Player</a>
+</body>
+</html>

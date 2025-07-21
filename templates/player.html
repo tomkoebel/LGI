@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Random NHL Player</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .player-img { max-width: 200px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Random NHL Player</h1>
+    {% if player %}
+        <img class="player-img" src="{{ player.image_url }}" alt="Player Headshot">
+        <ul>
+            <li><strong>Name:</strong> {{ player.name }}</li>
+            <li><strong>Number:</strong> {{ player.number }}</li>
+            <li><strong>Position:</strong> {{ player.position }}</li>
+            <li><strong>Previous Season:</strong> {{ player.previous_season_stats.goals }} G, {{ player.previous_season_stats.assists }} A, {{ player.previous_season_stats.points }} PTS</li>
+            <li><strong>Career:</strong> {{ player.career_stats.goals }} G, {{ player.career_stats.assists }} A, {{ player.career_stats.points }} PTS</li>
+        </ul>
+    {% else %}
+        <p>No player found.</p>
+    {% endif %}
+    <a href="/compare">Compare Two Players</a>
+</body>
+</html>

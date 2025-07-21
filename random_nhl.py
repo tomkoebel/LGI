@@ -68,8 +68,8 @@ def fetch_islanders_roster():
                     player_id = player["id"]
                 image_url = None
                 if player_id:
-                    # NHL headshot URL pattern
-                    image_url = f"https://assets.nhle.com/m/photos/{player_id}.jpg"
+                    # NHL BAM headshot URL pattern
+                    image_url = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
                 players.append({
                     "name": name,
                     "number": number,
@@ -157,7 +157,7 @@ def get_random_player(team_abbr=None):
     if player_id:
         player["previous_season_stats"] = fetch_player_stats(player_id, prev_season)
         player["career_stats"] = fetch_player_stats(player_id, career=True)
-        player["image_url"] = f"https://assets.nhle.com/m/photos/{player_id}.jpg"
+        player["image_url"] = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
     else:
         player["previous_season_stats"] = {}
         player["career_stats"] = {}
@@ -182,7 +182,7 @@ def compare_random_players(team_abbr=None):
         if player_id:
             player["previous_season_stats"] = fetch_player_stats(player_id, prev_season)
             player["career_stats"] = fetch_player_stats(player_id, career=True)
-            player["image_url"] = f"https://assets.nhle.com/m/photos/{player_id}.jpg"
+            player["image_url"] = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
         else:
             player["previous_season_stats"] = {}
             player["career_stats"] = {}
