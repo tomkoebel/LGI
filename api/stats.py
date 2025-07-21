@@ -33,11 +33,14 @@ def fetch_player_stats(player_id, season_id=None, career=False):
         url = f"https://api-web.nhle.com/v1/player/{player_id}/game-log/{season_id}/"
         resp = requests.get(url)
         if resp.status_code != 200:
+            print(f"DEBUG: Failed to fetch game log for player {player_id}, season {season_id}. Status: {resp.status_code}")
             return {}
         data = resp.json()
-        goals = assists = points = 0
+        print(f"DEBUG: Raw game log API response for player {player_id}, season {season_id}: {data}")
+        goals = assists = points = games_played = 0
         for game in data.get("gameLog", []):
             stats = game.get("stats", {})
+            games_played += 1
             try:
                 goals += int(stats.get("goals", 0) or 0)
             except (TypeError, ValueError):
@@ -50,4 +53,5 @@ def fetch_player_stats(player_id, season_id=None, career=False):
                 points += int(stats.get("points", 0) or 0)
             except (TypeError, ValueError):
                 pass
-        return {"goals": goals, "assists": assists, "points": points}
+        print(f"DEBUG: Computed stats for player {player_id}, season {season_id}: GP={games_played}, G={goals}, A={assists}, PTS={points}")
+        return {"gamesPlayed": games_played, "goals": goals, "assists": assists, "points": points}

@@ -1,3 +1,28 @@
+def get_latest_season_id():
+    """
+    Returns the latest completed season ID from NHL API standings
+    """
+    url = "https://api-web.nhle.com/v1/standings/now"
+    resp = requests.get(url)
+    resp.raise_for_status()
+    data = resp.json()
+    # Find the latest seasonId from the standings data
+    season_ids = sorted(set([team.get('seasonId') for team in data.get('standings', []) if 'seasonId' in team]), reverse=True)
+    if len(season_ids) > 1:
+        # Use the second highest seasonId (latest completed)
+        prev_season = str(season_ids[1])
+        print(f"DEBUG: Using previous completed season id from API: {prev_season}")
+        return prev_season
+    elif season_ids:
+        # Only one season found, fallback to previous hardcoded season
+        print(f"DEBUG: Only one season id found ({season_ids[0]}), falling back to previous season 20232024")
+        return "20232024"
+    # Fallback: use previous logic
+    current_year = datetime.now().year
+    if datetime.now().month < 9:
+        return f"{current_year-2}{current_year-1}"
+    else:
+        return f"{current_year-1}{current_year}"
 import random
 import requests
 from datetime import datetime
@@ -89,33 +114,38 @@ def get_random_player(team_abbr=None):
         return None
     player = random.choice(roster)
     player_id = player.get("id")
-    current_year = datetime.now().year
-    prev_season = f"{current_year-2}{current_year-1}" if datetime.now().month < 9 else f"{current_year-1}{current_year}"
+    prev_season = get_latest_season_id()
+    print(f"DEBUG: Using previous season id: {prev_season}")
     if player_id:
-        player["previous_season_stats"] = fetch_player_stats(player_id, prev_season)
         player["career_stats"] = fetch_player_stats(player_id, career=True)
         player["image_url"] = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
     else:
-        player["previous_season_stats"] = {}
         player["career_stats"] = {}
         player["image_url"] = None
     return player
 
 def compare_random_players(team_abbr=None):
-    roster = fetch_roster(team_abbr)
-    if not roster or len(roster) < 2:
+    # Select two random teams
+    url = "https://api-web.nhle.com/v1/standings/now"
+    resp = requests.get(url)
+    resp.raise_for_status()
+    data = resp.json()
+    teams = [team['teamAbbrev']['default'] for team in data.get('standings', []) if 'teamAbbrev' in team]
+    if len(teams) < 2:
         return None, None
-    player1, player2 = random.sample(roster, 2)
+    team1, team2 = random.sample(teams, 2)
+    roster1 = fetch_roster(team1)
+    roster2 = fetch_roster(team2)
+    if not roster1 or not roster2:
+        return None, None
+    player1 = random.choice(roster1)
+    player2 = random.choice(roster2)
     for player in (player1, player2):
         player_id = player.get("id")
-        current_year = datetime.now().year
-        prev_season = f"{current_year-2}{current_year-1}" if datetime.now().month < 9 else f"{current_year-1}{current_year}"
         if player_id:
-            player["previous_season_stats"] = fetch_player_stats(player_id, prev_season)
             player["career_stats"] = fetch_player_stats(player_id, career=True)
             player["image_url"] = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
         else:
-            player["previous_season_stats"] = {}
             player["career_stats"] = {}
             player["image_url"] = None
     return player1, player2
