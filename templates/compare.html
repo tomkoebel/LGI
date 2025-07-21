@@ -13,10 +13,10 @@
     <h1>Compare Two NHL Players</h1>
     <div class="player">
         {% if player1 %}
-            <div style="text-align:center;">
-                <img src="{{ player1.team_logo }}" alt="Team Logo" style="height:64px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center;">
+                <img src="{{ player1.team_logo }}" alt="Team Logo" style="height:120px; margin-right:24px;">
+                <img class="player-img" src="{{ player1.image_url }}" alt="Player 1 Headshot" style="max-width:100px;">
             </div>
-            <img class="player-img" src="{{ player1.image_url }}" alt="Player 1 Headshot">
             <ul>
                 <li><strong>Name:</strong> {{ player1.name }}</li>
                 <li><strong>Number:</strong> {{ player1.number }}</li>
@@ -30,10 +30,10 @@
     </div>
     <div class="player">
         {% if player2 %}
-            <div style="text-align:center;">
-                <img src="{{ player2.team_logo }}" alt="Team Logo" style="height:64px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center;">
+                <img src="{{ player2.team_logo }}" alt="Team Logo" style="height:120px; margin-right:24px;">
+                <img class="player-img" src="{{ player2.image_url }}" alt="Player 2 Headshot" style="max-width:100px;">
             </div>
-            <img class="player-img" src="{{ player2.image_url }}" alt="Player 2 Headshot">
             <ul>
                 <li><strong>Name:</strong> {{ player2.name }}</li>
                 <li><strong>Number:</strong> {{ player2.number }}</li>
