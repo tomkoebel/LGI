@@ -70,12 +70,16 @@ def fetch_islanders_roster():
                 if player_id:
                     # NHL BAM headshot URL pattern
                     image_url = f"https://nhl.bamcontent.com/images/headshots/current/168x168/{player_id}.jpg"
+                # Add team logo SVG URL
+                team_logo = f"https://assets.nhle.com/logos/nhl/svg/{team_abbr}_light.svg"
                 players.append({
                     "name": name,
                     "number": number,
                     "position": position,
                     "id": player_id,
-                    "image_url": image_url
+                    "image_url": image_url,
+                    "team_abbr": team_abbr,
+                    "team_logo": team_logo
                 })
         print(f"Found {len(players)} players for {team_abbr} in API response.")
         return players

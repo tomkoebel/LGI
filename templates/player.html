@@ -11,6 +11,9 @@
 <body>
     <h1>Random NHL Player</h1>
     {% if player %}
+        <div style="text-align:center;">
+            <img src="{{ player.team_logo }}" alt="Team Logo" style="height:64px; margin-bottom:10px;">
+        </div>
         <img class="player-img" src="{{ player.image_url }}" alt="Player Headshot">
         <ul>
             <li><strong>Name:</strong> {{ player.name }}</li>

@@ -26,4 +26,4 @@ def api_compare():
     return jsonify({'player1': p1, 'player2': p2})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5050)
