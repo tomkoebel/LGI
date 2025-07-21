@@ -66,11 +66,16 @@ def fetch_islanders_roster():
                     player_id = player_info["id"]
                 elif "id" in player:
                     player_id = player["id"]
+                image_url = None
+                if player_id:
+                    # NHL headshot URL pattern
+                    image_url = f"https://assets.nhle.com/m/photos/{player_id}.jpg"
                 players.append({
                     "name": name,
                     "number": number,
                     "position": position,
-                    "id": player_id
+                    "id": player_id,
+                    "image_url": image_url
                 })
         print(f"Found {len(players)} players for {team_abbr} in API response.")
         return players
@@ -136,7 +141,7 @@ def fetch_player_stats(player_id, season_id=None, career=False):
 
 def get_random_player(team_abbr=None):
     """
-    Return a random player (name, number, position) from the given team's current roster.
+    Return a random player (name, number, position, image_url) from the given team's current roster.
     If no team_abbr is provided, picks a random team.
     """
     fetch_roster = fetch_islanders_roster()
@@ -152,10 +157,37 @@ def get_random_player(team_abbr=None):
     if player_id:
         player["previous_season_stats"] = fetch_player_stats(player_id, prev_season)
         player["career_stats"] = fetch_player_stats(player_id, career=True)
+        player["image_url"] = f"https://assets.nhle.com/m/photos/{player_id}.jpg"
     else:
         player["previous_season_stats"] = {}
         player["career_stats"] = {}
+        player["image_url"] = None
     return player
+def compare_random_players(team_abbr=None):
+    """
+    Select two unique random players from the given team (or random team) and return their info and stats for comparison.
+    """
+    fetch_roster = fetch_islanders_roster()
+    roster = fetch_roster(team_abbr)
+    if not roster or len(roster) < 2:
+        print("Not enough players to compare.")
+        return None, None
+    player1, player2 = random.sample(roster, 2)
+    # Fill stats and image URLs
+    for player in (player1, player2):
+        player_id = player.get("id")
+        from datetime import datetime
+        current_year = datetime.now().year
+        prev_season = f"{current_year-2}{current_year-1}" if datetime.now().month < 9 else f"{current_year-1}{current_year}"
+        if player_id:
+            player["previous_season_stats"] = fetch_player_stats(player_id, prev_season)
+            player["career_stats"] = fetch_player_stats(player_id, career=True)
+            player["image_url"] = f"https://assets.nhle.com/m/photos/{player_id}.jpg"
+        else:
+            player["previous_season_stats"] = {}
+            player["career_stats"] = {}
+            player["image_url"] = None
+    return player1, player2
 
 def get_random_players(n=1, team_abbr=None):
     """
@@ -175,6 +207,7 @@ if __name__ == "__main__":
         print(f"  Name: {player['name']}")
         print(f"  Number: {player['number']}")
         print(f"  Position: {player['position']}")
+        print(f"  Image URL: {player.get('image_url', 'N/A')}")
         if player.get('previous_season_stats'):
             stats = player['previous_season_stats']
             print(f"  Games Played: {stats.get('gamesPlayed', 0)}")
@@ -184,3 +217,21 @@ if __name__ == "__main__":
             print(f"  Career: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
     else:
         print("No NHL player found.")
+
+    print("\nComparing two random players:")
+    p1, p2 = compare_random_players()
+    if p1 and p2:
+        for idx, p in enumerate([p1, p2], 1):
+            print(f"Player {idx}:")
+            print(f"  Name: {p['name']}")
+            print(f"  Number: {p['number']}")
+            print(f"  Position: {p['position']}")
+            print(f"  Image URL: {p.get('image_url', 'N/A')}")
+            if p.get('previous_season_stats'):
+                stats = p['previous_season_stats']
+                print(f"  Previous Season: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
+            if p.get('career_stats'):
+                stats = p['career_stats']
+                print(f"  Career: {stats.get('goals', 0)} G, {stats.get('assists', 0)} A, {stats.get('points', 0)} PTS")
+    else:
+        print("Not enough players to compare.")
