@@ -40,8 +40,14 @@ def get_team_logo(team_abbr):
     return f"https://assets.nhle.com/logos/nhl/svg/{team_abbr}_light.svg"
 
 def fetch_roster(team_abbr=None):
+    season_id = get_latest_season_id()
+    return fetch_roster_with_season(team_abbr, season_id)
+
+def fetch_roster_with_season(team_abbr=None, season_id=None):
     if not team_abbr:
         team_abbr = fetch_random_team_abbr()
+    if not season_id:
+        season_id = get_latest_season_id()
     url = f"https://api-web.nhle.com/v1/roster/{team_abbr}/current"
     resp = requests.get(url)
     resp.raise_for_status()
@@ -95,8 +101,6 @@ def fetch_roster(team_abbr=None):
                 player_id = player["id"]
             image_url = None
             if player_id and team_abbr:
-                # Use the latest season id for headshot URL
-                season_id = get_latest_season_id()
                 image_url = f"https://assets.nhle.com/mugs/nhl/{season_id}/{team_abbr}/{player_id}.png"
             players.append({
                 "name": name,
@@ -111,53 +115,70 @@ def fetch_roster(team_abbr=None):
 
 
 def get_random_player(team_abbr=None):
-    roster = fetch_roster(team_abbr)
+    season_id = get_latest_season_id()
+    roster = fetch_roster_with_season(team_abbr, season_id)
     if not roster:
         return None
     player = random.choice(roster)
     player_id = player.get("id")
-    prev_season = get_latest_season_id()
-    print(f"DEBUG: Using previous season id: {prev_season}")
+    print(f"DEBUG: Using season id for headshot: {season_id}")
     if player_id:
         player["career_stats"] = fetch_player_stats(player_id, career=True)
-        season_id = get_latest_season_id()
-        team_abbr = player.get("team_abbr")
-        player["image_url"] = f"https://assets.nhle.com/mugs/nhl/{season_id}/{team_abbr}/{player_id}.png"
     else:
         player["career_stats"] = {}
-        player["image_url"] = None
     return player
 
 def compare_random_players(team_abbr=None):
+    import time
+    start_time = time.time()
     # Select two random teams
     url = "https://api-web.nhle.com/v1/standings/now"
+    print("DEBUG: Fetching teams...")
     resp = requests.get(url)
     resp.raise_for_status()
     data = resp.json()
     teams = [team['teamAbbrev']['default'] for team in data.get('standings', []) if 'teamAbbrev' in team]
+    print(f"DEBUG: Found {len(teams)} teams.")
     if len(teams) < 2:
+        print("DEBUG: Not enough teams.")
         return None, None
     team1, team2 = random.sample(teams, 2)
+    print(f"DEBUG: Selected teams: {team1}, {team2}")
     roster1 = fetch_roster(team1)
     roster2 = fetch_roster(team2)
+    print(f"DEBUG: Roster sizes: {len(roster1)}, {len(roster2)}")
     if not roster1 or not roster2:
+        print("DEBUG: Missing roster(s).")
         return None, None
     player1 = random.choice(roster1)
     player2 = random.choice(roster2)
+    print(f"DEBUG: Selected player IDs: {player1.get('id')}, {player2.get('id')}")
+    season_id = get_latest_season_id()
+    roster1 = fetch_roster_with_season(team1, season_id)
+    roster2 = fetch_roster_with_season(team2, season_id)
+    print(f"DEBUG: Roster sizes: {len(roster1)}, {len(roster2)}")
+    if not roster1 or not roster2:
+        print("DEBUG: Missing roster(s).")
+        return None, None
+    player1 = random.choice(roster1)
+    player2 = random.choice(roster2)
+    print(f"DEBUG: Selected player IDs: {player1.get('id')}, {player2.get('id')} (season_id: {season_id})")
     for player in (player1, player2):
         player_id = player.get("id")
         if player_id:
             player["career_stats"] = fetch_player_stats(player_id, career=True)
-            season_id = get_latest_season_id()
-            team_abbr = player.get("team_abbr")
-            player["image_url"] = f"https://assets.nhle.com/mugs/nhl/{season_id}/{team_abbr}/{player_id}.png"
         else:
             player["career_stats"] = {}
-            player["image_url"] = None
+    elapsed = time.time() - start_time
+    print(f"DEBUG: compare_random_players total time: {elapsed:.2f} seconds")
+    return player1, player2
+    elapsed = time.time() - start_time
+    print(f"DEBUG: compare_random_players total time: {elapsed:.2f} seconds")
     return player1, player2
 
 def get_random_players(n=1, team_abbr=None):
-    roster = fetch_roster(team_abbr)
+    season_id = get_latest_season_id()
+    roster = fetch_roster_with_season(team_abbr, season_id)
     if not roster:
         return []
     return random.sample(roster, k=min(n, len(roster)))
