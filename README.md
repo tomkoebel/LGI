@@ -168,3 +168,6 @@ LGI/
 Visit `http://127.0.0.1:5050` in your browser to view a random player. Click "Compare Two Players" to see a side-by-side comparison.
 
 ---
+
+
+testing from pycharm
